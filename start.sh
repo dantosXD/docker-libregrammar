@@ -7,7 +7,7 @@ do
 done
 
 if [ "$config_injected" = true ] ; then
-    echo 'The following configuration is passed to LanguageTool:'
+    echo 'The following configuration is passed to LibreGrammar:'
 	echo "$(cat config.properties)"
 fi
 

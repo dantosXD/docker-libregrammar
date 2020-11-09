@@ -1,4 +1,4 @@
-ARG LANGUAGETOOL_VERSION=5.1.3
+ARG LIBREGRAMMAR_VERSION=5.1
 
 FROM debian:stretch as build
 
@@ -21,17 +21,17 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     update-locale LANG=en_US.UTF-8
 ENV LANG en_US.UTF-8
 
-ARG LANGUAGETOOL_VERSION
+ARG LIBREGRAMMAR_VERSION
 
-RUN git clone https://github.com/languagetool-org/languagetool.git --depth 1 -b v${LANGUAGETOOL_VERSION}
+RUN git clone https://github.com/TiagoSantos81/languagetool.git --depth 1 -b ${LIBREGRAMMAR_VERSION}
 
 WORKDIR /languagetool
 
 RUN ["mvn", "--projects", "languagetool-standalone", "--also-make", "package", "-DskipTests", "--quiet"]
 
-RUN LANGUAGETOOL_DIST_VERSION=$(xmlstarlet sel -N "x=http://maven.apache.org/POM/4.0.0" -t -v "//x:project/x:properties/x:languagetool.version" pom.xml) && unzip /languagetool/languagetool-standalone/target/LanguageTool-${LANGUAGETOOL_DIST_VERSION}.zip -d /dist
+RUN LIBREGRAMMAR_DIST_VERSION=$(xmlstarlet sel -N "x=http://maven.apache.org/POM/4.0.0" -t -v "//x:project/x:properties/x:languagetool.version" pom.xml) && unzip /languagetool/languagetool-standalone/target/LanguageTool-${LIBREGRAMMAR_DIST_VERSION}.zip -d /dist
 
-RUN LANGUAGETOOL_DIST_FOLDER=$(find /dist/ -name 'LanguageTool-*') && mv $LANGUAGETOOL_DIST_FOLDER /dist/LanguageTool
+RUN LIBREGRAMMAR_DIST_FOLDER=$(find /dist/ -name 'LanguageTool-*') && mv $LIBREGRAMMAR_DIST_FOLDER /dist/LibreGrammar
 
 FROM openjdk:8-jre-alpine
 
@@ -45,17 +45,17 @@ ARG LANGUAGETOOL_VERSION
 
 COPY --from=build /dist .
 
-WORKDIR /LanguageTool
+WORKDIR /LibreGrammar
 
 RUN mkdir /nonexistent && touch /nonexistent/.languagetool.cfg
 
-RUN addgroup -S languagetool && adduser -S languagetool -G languagetool
+RUN addgroup -S libregrammar && adduser -S libregrammar -G libregrammar
 
-COPY --chown=languagetool start.sh start.sh
+COPY --chown=libregrammar start.sh start.sh
 
-COPY --chown=languagetool config.properties config.properties
+COPY --chown=libregrammar config.properties config.properties
 
-USER languagetool
+USER libregrammar
 
 CMD [ "bash", "start.sh" ]
 
