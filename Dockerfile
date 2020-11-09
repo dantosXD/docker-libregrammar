@@ -59,4 +59,4 @@ USER libregrammar
 
 CMD [ "bash", "start.sh" ]
 
-EXPOSE 8010
+EXPOSE 8081

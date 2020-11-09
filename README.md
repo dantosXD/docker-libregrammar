@@ -16,7 +16,7 @@ This approach could be used when you plan to make changes to the `Dockerfile`.
 git clone https://github.com/py-crash/docker-libregrammar.git -b libregrammar --config core.autocrlf=input
 cd libregrammar
 docker build -t libregrammar .
-docker run --rm -it -p 8010:8010 libregrammar
+docker run --rm -it -p 8081:8081 libregrammar
 ```
 
 # Configuration
@@ -26,7 +26,7 @@ LibreGrammar will be started with a minimal heap size (`-Xms`) of `256m` and a m
 
 An example startup configuration:
 ```
-docker run --rm -it -p 8010:8010 -e Java_Xms=512m -e Java_Xmx=2g libregrammar
+docker run --rm -it -p 8081:8081 -e Java_Xms=512m -e Java_Xmx=2g libregrammar
 ```
 
 ## LibreGrammar HTTPServerConfig
@@ -34,7 +34,7 @@ You are able to use the [HTTPServerConfig](https://languagetool.org/development/
 
 An example startup configuration:
 ```
-docker run --rm -it -p 8010:8010 -e langtool_pipelinePrewarming=true -e Java_Xms=1g -e Java_Xmx=2g libregrammar
+docker run --rm -it -p 8081:8081 -e langtool_pipelinePrewarming=true -e Java_Xms=1g -e Java_Xmx=2g libregrammar
 ```
 
 ## Using n-gram datasets
@@ -46,7 +46,7 @@ docker run --rm -it -p 8010:8010 -e langtool_pipelinePrewarming=true -e Java_Xms
 
 An example startup configuration:
 ```
-docker run --rm -it -p 8010:8010 -e langtool_languageModel=/ngrams -v local/path/to/ngrams:/ngrams libregrammar
+docker run --rm -it -p 8081:8081 -e langtool_languageModel=/ngrams -v local/path/to/ngrams:/ngrams libregrammar
 ```
 
 ## Improving the spell checker
@@ -73,7 +73,7 @@ USER libregrammar
 You can build & run the custom Dockerfile with the following two commands:
 ```
 docker build -t libregrammar-custom .
-docker run --rm -it -p 8010:8010 libregrammar-custom
+docker run --rm -it -p 8081:8081 libregrammar-custom
 ```
 
 You can add words to other languages by changing the `en` language tag in the target path. Note that for some languages, e.g. for `nl` the `spelling.txt` file is not in the `hunspell` folder: `org/languagetool/resource/nl/spelling/spelling.txt`.
@@ -90,7 +90,7 @@ services:
     build: ./docker-libregrammar
     container_name: libregrammar
     ports:
-        - 8010:8010  # Using default port from the image
+        - 8081:8081  # Using default port from the image
     environment:
         - langtool_languageModel=/ngrams  # OPTIONAL: Using ngrams data
         - Java_Xms=512m  # OPTIONAL: Setting a minimal Java heap size of 512 mib
@@ -102,11 +102,11 @@ services:
 This assumes you have cloned the repo into a folder called `docker-libregrammar` in the same path as your docker-compose.yml
 
 # Usage
-By default this image is configured to listen on port 8010 which deviates from the default port of LanguageTool 8081.
+By default this image is configured to listen on port 8081.
 
 An example cURL request:
 ```
-curl --data "language=en-US&text=a simple test" http://localhost:8010/v2/check
+curl --data "language=en-US&text=a simple test" http://localhost:8081/v2/check
 ```
 
 Please refer to the [official LanguageTool documentation](https://dev.languagetool.org/) and to the
