@@ -1,0 +1,29 @@
+# This job was creatin using the template from:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Docker.gitlab-ci.yml
+
+# Build a Docker image with CI/CD and push to the GitLab registry.
+# Docker-in-Docker documentation: https://docs.gitlab.com/ee/ci/docker/using_docker_build.html
+#
+# A new image should be created each time there is a new tag added to the repo
+# This should save some time in the pipelines, and also avoid rebuilding the image
+# when unnecessary, e.g. if the only thing updated was the README.md
+
+docker-build:
+  # Use the official docker image.
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  # Default branch leaves tag empty (= latest tag)
+  # All other branches are tagged with the escaped branch name (commit ref slug)
+  script:
+    # Name the image using the git tag
+    - tag=$(git describe --abbrev=0 2>/dev/null || echo '')
+    - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
+    - docker push "$CI_REGISTRY_IMAGE${tag}"
+  # Only create a new image when a commit is tagged
+  only:
+    refs:
+      - tags
