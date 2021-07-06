@@ -1,6 +1,9 @@
 # Dockerfile for LibreGrammar
-This repository contains a Dockerfile to create a Docker image for [LibreGrammar](https://github.com/TiagoSantos81/languagetool), a LanguageTool fork maintained
+This repository contains a Dockerfile to create a Docker image for [LibreGrammar](https://github.com/TiagoSantos81/libregrammar), a LanguageTool fork maintained
 by [TiagoSantos81](https://github.com/TiagoSantos81).
+
+The main repository can be found on [GitLab](https://gitlab.com/py_crash/docker-libregrammar). There is also a mirror, mainly used for following the
+[original project](https://github.com/Erikvl87/docker-languagetool) available on [GitHub](https://github.com/py-crash/docker-libregrammar).
 
 I wrote this image since I'm looking for a Job, so I can't afford to pay LanguageTool premium and LibreGrammar activates most of the rules.
 
@@ -59,7 +62,8 @@ docker run --rm -it -p 8081:8081 -e langtool_languageModel=/ngrams -v local/path
 *Source: [https://dev.languagetool.org/hunspell-support](https://dev.languagetool.org/hunspell-support)*
 
 The following `Dockerfile` contains an example on how to add words to `spelling.txt`. It assumes you have your own list of words in `en_spelling_additions.txt` next to the `Dockerfile`. It assumes you already built the LibreGrammar image.
-```
+
+```Dockerfile
 FROM libregrammar
 
 # Improving the spell checker
@@ -76,7 +80,7 @@ docker build -t libregrammar-custom .
 docker run --rm -it -p 8081:8081 libregrammar-custom
 ```
 
-You can add words to other languages by changing the `en` language tag in the target path. Note that for some languages, e.g. for `nl` the `spelling.txt` file is not in the `hunspell` folder: `org/languagetool/resource/nl/spelling/spelling.txt`.
+You can add words to other languages by changing the `en` language tag in the target path. Note that for some languages, e.g., for `nl` the `spelling.txt` file is not in the `hunspell` folder: `org/languagetool/resource/nl/spelling/spelling.txt`.
 
 # Docker Compose
 
@@ -101,8 +105,18 @@ services:
 
 This assumes you have cloned the repo into a folder called `docker-libregrammar` in the same path as your docker-compose.yml
 
+# Podman
+
+This image can be also be build and run using rootless podman. In fact, I use podman myself on my computer. Just
+replace `docker` for `podman` and it should work:
+
+```
+$ podman build -t libregrammar ./
+$ podman run -d --rm -it -p 8081:8081 -e langtool_languageModel=/ngrams -e Java_Xms=1g -e Java_Xmx=3g -v /path/to/ngrams:/ngrams localhost/libregrammar
+```
+
 # Usage
-By default this image is configured to listen on port 8081.
+By default this image is configured to listen on port 8081 (the default port for LibreGrammar).
 
 An example cURL request:
 ```
